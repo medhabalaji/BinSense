@@ -23,19 +23,16 @@ unsigned long lidOpenTime = 0;
 void setup() {
   Serial.begin(115200);
 
-  // IR sensors
   pinMode(IR_25_PIN, INPUT);
   pinMode(IR_50_PIN, INPUT);
   pinMode(IR_75_PIN, INPUT);
   pinMode(IR_100_PIN, INPUT);
 
-  // Ultrasonic
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
 
-  // Servo
   lidServo.attach(SERVO_PIN);
-  lidServo.write(0); // start closed
+  lidServo.write(0); // closed
 }
 
 void loop() {
@@ -57,15 +54,14 @@ void loop() {
   if (handDistance > 0 && handDistance <= HAND_TRIGGER_DISTANCE) {
     if (!lidOpen) {
       Serial.println("Hand detected, trash can opening");
-      lidServo.write(90); // open angle
+      lidServo.write(90); // open
       lidOpen = true;
       lidOpenTime = millis();
     }
-    // If already open, stay open
   } else {
     if (lidOpen && (millis() - lidOpenTime >= 5000)) {
       Serial.println("Hand not detected, dustbin closing");
-      lidServo.write(0); // closed angle
+      lidServo.write(0); // closed
       lidOpen = false;
     }
   }
@@ -97,7 +93,7 @@ long getDistance() {
   delayMicroseconds(10);
   digitalWrite(TRIG_PIN, LOW);
 
-  long duration = pulseIn(ECHO_PIN, HIGH, 30000); // 30 ms timeout
+  long duration = pulseIn(ECHO_PIN, HIGH, 30000);
   if (duration == 0) return 0; // no echo
-  return duration * 0.034 / 2; // cm
+  return duration * 0.034 / 2;
 }
